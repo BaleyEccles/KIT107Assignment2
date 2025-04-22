@@ -1,6 +1,6 @@
 
 run: link 
-	java ./src/AssigTwo125
+	java -cp ./src AssigTwo125
 
 link:
 	javac ./src/*.java 

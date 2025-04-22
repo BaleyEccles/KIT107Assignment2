@@ -13,7 +13,8 @@ public class Eggs implements EggsInterface
     // final instance variables
 
     // other instance variables
-   
+    protected Egg[] eggCluster;
+    
 	/**
 	 * Constructor
 	 * 
@@ -24,7 +25,7 @@ public class Eggs implements EggsInterface
 	 */
     public Eggs()
     {
-COMPLETE ME!
+        eggCluster = new Egg[0];
     }
 
 	/**
@@ -39,7 +40,7 @@ COMPLETE ME!
 	 */
     public boolean isEmpty()
     {
-COMPLETE ME!
+        return (eggCluster.length == 0);
     }
 
     /**
@@ -55,7 +56,16 @@ COMPLETE ME!
 	 */
     public String getChocolatier()
     {
-COMPLETE ME!
+        if (isEmpty())
+        {
+            return "";
+        }
+        else
+        {
+            //System.out.println(eggCluster[0].chocolatier);
+            return eggCluster[0].chocolatier;
+        }
+        
     }
 
     /**
@@ -71,7 +81,7 @@ COMPLETE ME!
 	 */
     public double getVolume()
     {
-COMPLETE ME!
+        return eggCluster[0].volume;
     }
 
     /**
@@ -86,7 +96,13 @@ COMPLETE ME!
 	 */
     public void addEggToEggs(Egg e)
     {
-COMPLETE ME!
+        Egg[] eggClusterNew = new Egg[eggCluster.length + 1];
+        for (int i = 0; i < eggCluster.length; i++)
+        {
+            eggClusterNew[i] = eggCluster[i];
+        }
+        eggClusterNew[eggClusterNew.length - 1] = e;
+        eggCluster = eggClusterNew;
     }
 
     /**
@@ -104,7 +120,47 @@ COMPLETE ME!
 	 */
     public double processCategory(char t, int v)
     {
-COMPLETE ME!
+        double total = 0.0;
+        
+        for(int i = 0; i < eggCluster.length; i++)
+        {
+            switch (t) {
+            case 'c': {
+                if (eggCluster[i].chocolate.ordinal() == v)
+                {
+                    total++;
+                }
+                break;
+            }
+            case 'f': {
+                if (eggCluster[i].fill.ordinal() == v)
+                {
+                    total++;
+                }
+                break;
+            }
+            case 'r': {
+                if (eggCluster[i].wrap.ordinal() == v)
+                {
+                    total++;
+                }
+                break;
+            }
+            case 't': {
+                total++;
+                break;
+            }
+            case 'v': {
+                total += eggCluster[i].volume;
+                break;
+            }
+            case 'w': {
+                total += eggCluster[i].weight;
+                break;
+            }
+            }
+        }
+        return total;
     }
 
 	/**
@@ -120,6 +176,16 @@ COMPLETE ME!
 	 */
     public String toString()
     {
-COMPLETE ME!
+        String output = "";
+        if (!isEmpty())
+        {
+            for(int i = 0; i < eggCluster.length; i++)
+            {
+                output += eggCluster[i].toString();
+                output += "\n";
+            }
+        }
+        return output;
     }
+
 }

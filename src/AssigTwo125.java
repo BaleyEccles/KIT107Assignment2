@@ -37,7 +37,7 @@ public class AssigTwo125
 		myFile=new FileHandler(FILENAME);
 		myFile.readFile(basket);
 
-		//System.out.println(basket.toString());  // uncomment when debugging
+		// System.out.println(basket.toString());  // uncomment when debugging
 		
 		// generate the reports
 		basket.showGraph('t', "total number", INVALID);

@@ -10,13 +10,16 @@
 
 import java.text.DecimalFormat;
 
-
 public class Chocolatiers implements ChocolatiersInterface
 {
     // final instance variables
-
+    final String []CHOCOLATIERS = { "Lindt", "Cadbury",
+                                    "Pink Lady", "Darrell Lea", "Kinder", "Ferrero",
+                                    "Mars" };
     // other instance variables
 
+    
+    protected Eggs[] chocolatiersCollection;
 
 	/**
 	 * Constructor
@@ -28,7 +31,7 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public Chocolatiers()
     {
-COMPLETE ME!
+        chocolatiersCollection = new Eggs[0];
     }
 
 	/**
@@ -43,7 +46,7 @@ COMPLETE ME!
 	 */
     public boolean isEmpty()
     {
-COMPLETE ME!
+        return (chocolatiersCollection.length == 0);
     }
 
     /**
@@ -61,7 +64,16 @@ COMPLETE ME!
 	 */
     public int findChocolatier(String c)
     {
-COMPLETE ME!
+        int index = -1;
+        for (int i = 0; i < chocolatiersCollection.length; i++)
+        {
+            if (chocolatiersCollection[i].getChocolatier().equals(c))
+            {
+                index = i;
+            }
+        }
+        
+        return index;
     }
 
     /**
@@ -78,7 +90,24 @@ COMPLETE ME!
 	 */
     public void addEggToChocolatiers(Egg e)
     {
-COMPLETE ME!
+        int index = findChocolatier(e.chocolatier);
+
+        if (index == -1)
+        {
+            Eggs eggs = new Eggs();
+            eggs.addEggToEggs(e);
+            
+            Eggs[] chocolatiersCollectionNew = new Eggs[chocolatiersCollection.length + 1];
+            for (int i = 0; i < chocolatiersCollection.length; i++)
+            {
+                chocolatiersCollectionNew[i] = chocolatiersCollection[i];
+            }
+            chocolatiersCollectionNew[chocolatiersCollectionNew.length - 1] = eggs;
+            chocolatiersCollection = chocolatiersCollectionNew;
+        } else
+        {
+            chocolatiersCollection[index].addEggToEggs(e);
+        }
     }
 
     /**
@@ -96,7 +125,66 @@ COMPLETE ME!
 	 */
     public void showGraph(char t, String d, int v)
     {
-COMPLETE ME!
+        double[] data = new double[chocolatiersCollection.length];
+
+        for (int i = 0; i < chocolatiersCollection.length; i++)
+        {
+            data[i] = chocolatiersCollection[i].processCategory(t, v);
+        }
+
+
+        System.out.println("Easter eggs -- " + d);
+        switch (t){
+        case 't':
+        case 'f':
+        case 'r':
+        case 'c': { // Do bar graph
+            for (int i = 0; i < chocolatiersCollection.length; i++)
+            {
+                if (isValidChocolatier(chocolatiersCollection[i].getChocolatier()))
+                {
+                    final int starCount = (int)(data[i]/25.0);
+                    
+                    final String stars = "*".repeat(starCount);
+                    final String dataString = Double.toString(data[i]);
+                    final String leftPad =  " ".repeat(11 - chocolatiersCollection[i].getChocolatier().length());
+                    final String bar = leftPad + chocolatiersCollection[i].getChocolatier() + " | " + stars + "\t\t" + dataString;
+                    System.out.println(bar);
+                }
+            }
+
+            // TODO: Invalid Eggs
+            break;
+        }
+        case 'w':
+        case 'v': { // Only display numbers
+            for (int i = 0; i < chocolatiersCollection.length; i++)
+            {
+                if (isValidChocolatier(chocolatiersCollection[i].getChocolatier()))
+                {
+                    final String dataString = Double.toString(data[i]);
+                    final String leftPad =  " ".repeat(11 - chocolatiersCollection[i].getChocolatier().length());
+                    final String bar = leftPad + chocolatiersCollection[i].getChocolatier() + " | " + "\t\t" + dataString;
+                    System.out.println(bar);
+                }
+            }
+            break;
+        }
+        }
+
+    }
+    
+    private boolean isValidChocolatier(String chocolatierName)
+    {
+        boolean isValid = false;
+        for (int i = 0; i < CHOCOLATIERS.length; i++)
+        {
+            if (CHOCOLATIERS[i].equals(chocolatierName))
+            {
+                isValid = true;
+            }
+        }
+        return isValid;
     }
 
 	/**
@@ -112,6 +200,6 @@ COMPLETE ME!
 	 */
     public String toString()
     {
-COMPLETE ME!
+        return "";
     }
 }
