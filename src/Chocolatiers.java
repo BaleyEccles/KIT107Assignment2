@@ -75,9 +75,16 @@ public class Chocolatiers implements ChocolatiersInterface
     }
 
     // final instance variables
-    final String []CHOCOLATIERS = { "Lindt", "Cadbury",
-                                    "Pink Lady", "Darrell Lea", "Kinder", "Ferrero",
-                                    "Mars" };
+    final String []CHOCOLATIERS =
+    {
+        "Lindt",
+        "Cadbury",
+        "Pink Lady",
+        "Darrell Lea",
+        "Kinder",
+        "Ferrero",
+        "Mars"
+    };
     // other instance variables
 
     
@@ -190,59 +197,52 @@ public class Chocolatiers implements ChocolatiersInterface
 
 
         System.out.println("Easter eggs -- " + d);
-        switch (t)
+       
+        int invalidEggs = 0;
+        for (int i = 0; i < chocolatiersCollection.count; i++)
         {
-        case 't':
-        case 'f':
-        case 'r':
-        case 'c':
-            { // Do bar graph
-                int invalidEggs = 0;
-                for (int i = 0; i < chocolatiersCollection.count; i++)
+            if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
+            {
+                final int starCount = (int)(data[i]/25.0);
+
+                if (t == 't' || t == 'f' || t == 'r' || t == 'c')
                 {
-                    if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
-                    {
-                        final int starCount = (int)(data[i]/25.0);
-                    
-                        final String stars = "*".repeat(starCount);
-                        final String dataString = Double.toString(data[i]);
-                        final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
-                        final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + "\t\t" + dataString;
-                        System.out.println(bar);
-                    } else
-                    {
-                        invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
-                    }
-                
+                    final String stars = "*".repeat(starCount);
+                    final String dataString = Double.toString(data[i]);
+                    final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
+                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + "\t\t" + dataString;
+                    System.out.println(bar);
+                } else if (t == 'w' || t == 'v')
+                {
+                    final String dataString = Double.toString(data[i]);
+                    final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
+                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "\t\t" + dataString;
+                    System.out.println(bar);
                 }
-            
-                System.out.println("Invalid eggs: " + invalidEggs);
-                break;
+
+                        
+            } else
+            {
+                invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
             }
-        case 'w':
-        case 'v':
-            { // Only display numbers
-                int invalidEggs = 0;
-                for (int i = 0; i < chocolatiersCollection.count; i++)
-                {
-                    if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
-                    {
-                        final String dataString = Double.toString(data[i]);
-                        final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
-                        final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "\t\t" + dataString;
-                        System.out.println(bar);
-                    } else
-                    {
-                        invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
-                    }
-                }
-                
-                System.out.println("Invalid eggs: " + invalidEggs);
-                break;
+        }
+            
+        System.out.println("Invalid eggs: " + invalidEggs);
+
+        double dataMax = 0.0;
+        int maxIndex = -1;
+        for (int j = 0; j < data.length; j++)
+        {
+            if (data[j] > dataMax && isValidChocolatier(chocolatiersCollection.get(j).getChocolatier()))
+            {
+                dataMax = data[j];
+                maxIndex = j;
             }
         }
 
+        System.out.println("And the most common chocolatier for " + d + " eggs is......" + chocolatiersCollection.get(maxIndex).getChocolatier() + "!");
     }
+
     
     private boolean isValidChocolatier(String chocolatierName)
     {
