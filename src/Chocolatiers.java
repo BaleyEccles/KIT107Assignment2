@@ -195,6 +195,7 @@ public class Chocolatiers implements ChocolatiersInterface
         case 'f':
         case 'r':
         case 'c': { // Do bar graph
+            int invalidEggs = 0;
             for (int i = 0; i < chocolatiersCollection.count; i++)
             {
                 if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
@@ -206,10 +207,14 @@ public class Chocolatiers implements ChocolatiersInterface
                     final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
                     final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + "\t\t" + dataString;
                     System.out.println(bar);
+                } else
+                {
+                    invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
                 }
+                
             }
-
-            // TODO: Invalid Eggs
+            
+            System.out.println("Invalid eggs: " + invalidEggs);
             break;
         }
         case 'w':
