@@ -190,47 +190,56 @@ public class Chocolatiers implements ChocolatiersInterface
 
 
         System.out.println("Easter eggs -- " + d);
-        switch (t){
+        switch (t)
+        {
         case 't':
         case 'f':
         case 'r':
-        case 'c': { // Do bar graph
-            int invalidEggs = 0;
-            for (int i = 0; i < chocolatiersCollection.count; i++)
-            {
-                if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
+        case 'c':
+            { // Do bar graph
+                int invalidEggs = 0;
+                for (int i = 0; i < chocolatiersCollection.count; i++)
                 {
-                    final int starCount = (int)(data[i]/25.0);
+                    if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
+                    {
+                        final int starCount = (int)(data[i]/25.0);
                     
-                    final String stars = "*".repeat(starCount);
-                    final String dataString = Double.toString(data[i]);
-                    final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
-                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + "\t\t" + dataString;
-                    System.out.println(bar);
-                } else
+                        final String stars = "*".repeat(starCount);
+                        final String dataString = Double.toString(data[i]);
+                        final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
+                        final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + "\t\t" + dataString;
+                        System.out.println(bar);
+                    } else
+                    {
+                        invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
+                    }
+                
+                }
+            
+                System.out.println("Invalid eggs: " + invalidEggs);
+                break;
+            }
+        case 'w':
+        case 'v':
+            { // Only display numbers
+                int invalidEggs = 0;
+                for (int i = 0; i < chocolatiersCollection.count; i++)
                 {
-                    invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
+                    if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
+                    {
+                        final String dataString = Double.toString(data[i]);
+                        final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
+                        final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "\t\t" + dataString;
+                        System.out.println(bar);
+                    } else
+                    {
+                        invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
+                    }
                 }
                 
+                System.out.println("Invalid eggs: " + invalidEggs);
+                break;
             }
-            
-            System.out.println("Invalid eggs: " + invalidEggs);
-            break;
-        }
-        case 'w':
-        case 'v': { // Only display numbers
-            for (int i = 0; i < chocolatiersCollection.count; i++)
-            {
-                if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
-                {
-                    final String dataString = Double.toString(data[i]);
-                    final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
-                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "\t\t" + dataString;
-                    System.out.println(bar);
-                }
-            }
-            break;
-        }
         }
 
     }
