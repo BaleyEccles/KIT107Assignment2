@@ -12,6 +12,68 @@ import java.text.DecimalFormat;
 
 public class Chocolatiers implements ChocolatiersInterface
 {
+
+    
+    private class DynamicArray {
+        public DynamicArray()
+        {
+            // Set the size of the array to `INITIAL_SIZE`
+            size = INITIAL_SIZE;
+
+            // Allocate `size` amount of memory slots for data
+            data = new Eggs[size];
+
+            // Set number of items in the array to zero (this is unnecessary, as java should initialise it to zero any way)
+            count = 0;
+        }
+    
+        public void add(Eggs obj)
+        {
+            // Increase the size of the array if it is full
+
+            if (count == size)
+            {
+                increase(size * INCREASE_RATIO);
+            }
+
+            // Put the object in the next avalible memory slot
+            data[count] = obj;
+            // Increase the count by one, so we know where to put the next object
+            count++;
+
+        }
+
+        public Eggs get(int idx)
+        {
+            // Should do error checking for idx < count, but I wont misuse the my own data structure incorrectly :)
+            // Returns the relevant data at the given index
+            return data[idx];
+        }
+
+        private void increase(int newSize)
+        {
+
+            Eggs[] dataNew = new Eggs[newSize];
+            for (int i = 0; i < size; i++)
+            {
+                dataNew[i] = data[i];
+            }
+            data = dataNew;
+            size = newSize;
+        }
+    
+        private Eggs[] data; // Where the data is stored
+        private int size; // The total amount of elements that could be stored in the arry before increasing in size
+        public int count; // The current number of elements used in the array
+    
+        private final int INCREASE_RATIO = 2; // The amount at which we will increase the size of the array when full
+        // I saw a video that the best ratio is acctually the golden ratio, but 2 is fine too. (https://www.youtube.com/watch?v=GZPqDvG615k)
+    
+        private final int INITIAL_SIZE = 256; // The size that the array will take when initalised.
+        // 256 is feels like a good inital number. Power of 2 and not so small that we will need to increase the size of the array needlessly.
+    
+    }
+
     // final instance variables
     final String []CHOCOLATIERS = { "Lindt", "Cadbury",
                                     "Pink Lady", "Darrell Lea", "Kinder", "Ferrero",
@@ -19,7 +81,7 @@ public class Chocolatiers implements ChocolatiersInterface
     // other instance variables
 
     
-    protected Eggs[] chocolatiersCollection;
+    protected DynamicArray chocolatiersCollection;
 
 	/**
 	 * Constructor
@@ -31,7 +93,7 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public Chocolatiers()
     {
-        chocolatiersCollection = new Eggs[0];
+        chocolatiersCollection = new DynamicArray();
     }
 
 	/**
@@ -46,7 +108,7 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public boolean isEmpty()
     {
-        return (chocolatiersCollection.length == 0);
+        return (chocolatiersCollection.count == 0);
     }
 
     /**
@@ -65,9 +127,9 @@ public class Chocolatiers implements ChocolatiersInterface
     public int findChocolatier(String c)
     {
         int index = -1;
-        for (int i = 0; i < chocolatiersCollection.length; i++)
+        for (int i = 0; i < chocolatiersCollection.count; i++)
         {
-            if (chocolatiersCollection[i].getChocolatier().equals(c))
+            if (chocolatiersCollection.get(i).getChocolatier().equals(c))
             {
                 index = i;
             }
@@ -91,22 +153,16 @@ public class Chocolatiers implements ChocolatiersInterface
     public void addEggToChocolatiers(Egg e)
     {
         int index = findChocolatier(e.chocolatier);
-
+        
         if (index == -1)
         {
             Eggs eggs = new Eggs();
             eggs.addEggToEggs(e);
             
-            Eggs[] chocolatiersCollectionNew = new Eggs[chocolatiersCollection.length + 1];
-            for (int i = 0; i < chocolatiersCollection.length; i++)
-            {
-                chocolatiersCollectionNew[i] = chocolatiersCollection[i];
-            }
-            chocolatiersCollectionNew[chocolatiersCollectionNew.length - 1] = eggs;
-            chocolatiersCollection = chocolatiersCollectionNew;
+            chocolatiersCollection.add(eggs);
         } else
         {
-            chocolatiersCollection[index].addEggToEggs(e);
+            chocolatiersCollection.get(index).addEggToEggs(e);
         }
     }
 
@@ -125,11 +181,11 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public void showGraph(char t, String d, int v)
     {
-        double[] data = new double[chocolatiersCollection.length];
+        double[] data = new double[chocolatiersCollection.count];
 
-        for (int i = 0; i < chocolatiersCollection.length; i++)
+        for (int i = 0; i < chocolatiersCollection.count; i++)
         {
-            data[i] = chocolatiersCollection[i].processCategory(t, v);
+            data[i] = chocolatiersCollection.get(i).processCategory(t, v);
         }
 
 
@@ -139,16 +195,16 @@ public class Chocolatiers implements ChocolatiersInterface
         case 'f':
         case 'r':
         case 'c': { // Do bar graph
-            for (int i = 0; i < chocolatiersCollection.length; i++)
+            for (int i = 0; i < chocolatiersCollection.count; i++)
             {
-                if (isValidChocolatier(chocolatiersCollection[i].getChocolatier()))
+                if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
                 {
                     final int starCount = (int)(data[i]/25.0);
                     
                     final String stars = "*".repeat(starCount);
                     final String dataString = Double.toString(data[i]);
-                    final String leftPad =  " ".repeat(11 - chocolatiersCollection[i].getChocolatier().length());
-                    final String bar = leftPad + chocolatiersCollection[i].getChocolatier() + " | " + stars + "\t\t" + dataString;
+                    final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
+                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + "\t\t" + dataString;
                     System.out.println(bar);
                 }
             }
@@ -158,13 +214,13 @@ public class Chocolatiers implements ChocolatiersInterface
         }
         case 'w':
         case 'v': { // Only display numbers
-            for (int i = 0; i < chocolatiersCollection.length; i++)
+            for (int i = 0; i < chocolatiersCollection.count; i++)
             {
-                if (isValidChocolatier(chocolatiersCollection[i].getChocolatier()))
+                if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
                 {
                     final String dataString = Double.toString(data[i]);
-                    final String leftPad =  " ".repeat(11 - chocolatiersCollection[i].getChocolatier().length());
-                    final String bar = leftPad + chocolatiersCollection[i].getChocolatier() + " | " + "\t\t" + dataString;
+                    final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
+                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "\t\t" + dataString;
                     System.out.println(bar);
                 }
             }
