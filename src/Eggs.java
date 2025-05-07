@@ -86,7 +86,8 @@ public class Eggs implements EggsInterface
         if (isEmpty())
         {
             return 0.0;
-        } else
+        }
+        else
         {
             return ((Egg)eggCluster.getData()).getVolume();
         }
@@ -162,7 +163,8 @@ public class Eggs implements EggsInterface
                 eggCount++;
             }
             // Case 4: We need to check the next node
-            else {
+            else
+            {
                 // Set the previous node to the current node
                 previousEggNode = currentEggNode;
                 // Set the current node to the next node in the list

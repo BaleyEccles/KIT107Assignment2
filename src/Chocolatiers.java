@@ -40,7 +40,6 @@ public class Chocolatiers implements ChocolatiersInterface
             data[count] = obj;
             // Increase the count by one, so we know where to put the next object
             count++;
-
         }
 
         public Eggs get(int idx)
@@ -52,7 +51,6 @@ public class Chocolatiers implements ChocolatiersInterface
 
         private void increase(int newSize)
         {
-
             Eggs[] dataNew = new Eggs[newSize];
             for (int i = 0; i < size; i++)
             {
@@ -165,15 +163,16 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public void addEggToChocolatiers(Egg e)
     {
-        int index = findChocolatier(e.chocolatier); // The index at which the collection for the eggs chocolatier occurs
-
+        int index = findChocolatier(e.chocolatier); // The index at which the collection for the eggs chocolatier occur
+        Eggs eggs = new Eggs(); // Egg to be added, if the chocolatier does not exist yet
+        
         // If the chocolatier does not have a collection yet, we make one
         if (index == -1) 
         {
-            Eggs eggs = new Eggs();
             eggs.addEggToEggs(e);
             chocolatiersCollection.add(eggs);
-        } else
+        }
+        else
         {
             // add the egg to the collection, if it exists
             chocolatiersCollection.get(index).addEggToEggs(e);
@@ -198,8 +197,14 @@ public class Chocolatiers implements ChocolatiersInterface
         double[] data = new double[chocolatiersCollection.count]; // An array that contains all the data for the specific request
         int[] starCounts = new int[chocolatiersCollection.count]; // An array that stores the number of stars that will be used in the bar graph
         int invalidEggs = 0; // Number of eggs that dont have a chocolatier that we care about
-        String dataString; // String which will contain the the data in string form instead of double, and formatted to either 0 or 3 numbers after decimal place
 
+
+        String dataString; // String which will contain the the data in string form instead of double, and formatted to either 0 or 3 numbers after decimal place
+        String leftPad; // Padding before chocolatier name
+        String starPad; // Padding after stars
+        String stars; // Stars, corresponding to the number of stars needed
+        String bar; // Final bar to be printed
+        
         for (int i = 0; i < chocolatiersCollection.count; i++)
         {
             // Process the catagroy, from the users input
@@ -208,7 +213,6 @@ public class Chocolatiers implements ChocolatiersInterface
             // Get the number of stars for the bar graph
             starCounts[i] = (int)(data[i]/25.0);
         }
-
 
         // Print the headder for the graph
         System.out.println("Easter eggs -- " + d);
@@ -224,16 +228,17 @@ public class Chocolatiers implements ChocolatiersInterface
                     // If we are processing the volume catagory
                     // Format the dataString to contain 3 numbers after the decimal place
                     dataString = String.format("%.3f", data[i]);
-                } else
+                }
+                else
                 {
                     // Else, we will print the data as an integer. There will be no decimal places
                     dataString = String.format("%.0f", data[i]);
                 }
 
                 // Number of spaces that will go before the name in the graph
-                final String leftPad =  " ".repeat(MAX_CHOCOLATIERS_STRING_LENGTH - chocolatiersCollection.get(i).getChocolatier().length());
+                leftPad =  " ".repeat(MAX_CHOCOLATIERS_STRING_LENGTH - chocolatiersCollection.get(i).getChocolatier().length());
                 // Number of spaces that will go after the stars in the graph
-                final String starPad =  " ".repeat(maxElement(starCounts) + 4 - starCounts[i]);
+                starPad =  " ".repeat(maxElement(starCounts) + 4 - starCounts[i]);
 
 
                 if (t == 't' || t == 'f' || t == 'r' || t == 'c')
@@ -241,24 +246,26 @@ public class Chocolatiers implements ChocolatiersInterface
                     // Only print stars if we are dealing with a catagory that needs stars
                     
                     // Stars to be printed
-                    final String stars = "*".repeat(starCounts[i]);
+                    stars = "*".repeat(starCounts[i]);
 
                     // Bar to be printed
-                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + starPad + dataString;
+                    bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + starPad + dataString;
 
                     // print the bar with stars
                     System.out.println(bar);
-                } else if (t == 'w' || t == 'v') 
+                }
+                else if (t == 'w' || t == 'v') 
                 {
                     // Print graph without stars
 
                     // Bar to be printed
-                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "    " + dataString;
+                    bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "    " + dataString;
 
                     // print the bar without stars
                     System.out.println(bar);
                 }
-            } else
+            }
+            else
             {
                 // Increase the number of invalid eggs, by the number of eggs in the collection
                 invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
