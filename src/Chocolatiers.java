@@ -31,7 +31,6 @@ public class Chocolatiers implements ChocolatiersInterface
         public void add(Eggs obj)
         {
             // Increase the size of the array if it is full
-
             if (count == size)
             {
                 increase(size * INCREASE_RATIO);
@@ -76,6 +75,8 @@ public class Chocolatiers implements ChocolatiersInterface
     }
 
     // final instance variables
+    
+    // The chocolatiers that will be printed in the graph
     final String []CHOCOLATIERS =
     {
         "Lindt",
@@ -86,9 +87,11 @@ public class Chocolatiers implements ChocolatiersInterface
         "Ferrero",
         "Mars"
     };
-    // other instance variables
 
+    // The maximum of the CHOCOLATIERS string length. Will be used for formatting the graph.
+    final int MAX_CHOCOLATIERS_STRING_LENGTH = 11;
     
+    // other instance variables
     protected DynamicArray chocolatiersCollection;
 
 	/**
@@ -134,7 +137,9 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public int findChocolatier(String c)
     {
-        int index = -1;
+        int index = -1; // The index that will be returned. Initally -1, as that will be reutrned if nothing is found.
+
+        // iterate through each set of eggs and compare the input string to the chocolatier of that collection
         for (int i = 0; i < chocolatiersCollection.count; i++)
         {
             if (chocolatiersCollection.get(i).getChocolatier().equals(c))
@@ -160,16 +165,17 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public void addEggToChocolatiers(Egg e)
     {
-        int index = findChocolatier(e.chocolatier);
-        
-        if (index == -1)
+        int index = findChocolatier(e.chocolatier); // The index at which the collection for the eggs chocolatier occurs
+
+        // If the chocolatier does not have a collection yet, we make one
+        if (index == -1) 
         {
             Eggs eggs = new Eggs();
             eggs.addEggToEggs(e);
-            
             chocolatiersCollection.add(eggs);
         } else
         {
+            // add the egg to the collection, if it exists
             chocolatiersCollection.get(index).addEggToEggs(e);
         }
     }
@@ -189,56 +195,89 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public void showGraph(char t, String d, int v)
     {
-        double[] data = new double[chocolatiersCollection.count];
-        int[] starCounts = new int[chocolatiersCollection.count];;
+        double[] data = new double[chocolatiersCollection.count]; // An array that contains all the data for the specific request
+        int[] starCounts = new int[chocolatiersCollection.count]; // An array that stores the number of stars that will be used in the bar graph
+        int invalidEggs = 0; // Number of eggs that dont have a chocolatier that we care about
+        String dataString; // String which will contain the the data in string form instead of double, and formatted to either 0 or 3 numbers after decimal place
+
         for (int i = 0; i < chocolatiersCollection.count; i++)
         {
+            // Process the catagroy, from the users input
             data[i] = chocolatiersCollection.get(i).processCategory(t, v);
+            
+            // Get the number of stars for the bar graph
             starCounts[i] = (int)(data[i]/25.0);
         }
 
 
+        // Print the headder for the graph
         System.out.println("Easter eggs -- " + d);
-       
-        int invalidEggs = 0;
+
         for (int i = 0; i < chocolatiersCollection.count; i++)
         {
+            // Only print bar if the chocolatier one of the ones that we care about
             if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
             {
-                String dataString;
+
                 if (t == 'v')
                 {
+                    // If we are processing the volume catagory
+                    // Format the dataString to contain 3 numbers after the decimal place
                     dataString = String.format("%.3f", data[i]);
                 } else
                 {
+                    // Else, we will print the data as an integer. There will be no decimal places
                     dataString = String.format("%.0f", data[i]);
                 }
-                
-                final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
+
+                // Number of spaces that will go before the name in the graph
+                final String leftPad =  " ".repeat(MAX_CHOCOLATIERS_STRING_LENGTH - chocolatiersCollection.get(i).getChocolatier().length());
+                // Number of spaces that will go after the stars in the graph
                 final String starPad =  " ".repeat(maxElement(starCounts) + 4 - starCounts[i]);
+
 
                 if (t == 't' || t == 'f' || t == 'r' || t == 'c')
                 {
+                    // Only print stars if we are dealing with a catagory that needs stars
+                    
+                    // Stars to be printed
                     final String stars = "*".repeat(starCounts[i]);
+
+                    // Bar to be printed
                     final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + starPad + dataString;
+
+                    // print the bar with stars
                     System.out.println(bar);
-                } else if (t == 'w' || t == 'v')
+                } else if (t == 'w' || t == 'v') 
                 {
+                    // Print graph without stars
+
+                    // Bar to be printed
                     final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "    " + dataString;
+
+                    // print the bar without stars
                     System.out.println(bar);
                 }
-
-
             } else
             {
+                // Increase the number of invalid eggs, by the number of eggs in the collection
                 invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
             }
         }
-            
+
+        // Print the number of invalid eggs
         System.out.println("Invalid eggs: " + invalidEggs);
 
-        double dataMax = 0.0;
-        int maxIndex = -1;
+        // Print the most common egg for some description
+        printMostCommon(data, d);
+    }
+
+    private void printMostCommon(double[] data, String d)
+    {
+        double dataMax = 0.0; // Max number in data
+        int maxIndex = -1; //Where the max occurs
+
+        // Find the max elemnt in the data array
         for (int j = 0; j < data.length; j++)
         {
             if (data[j] > dataMax && isValidChocolatier(chocolatiersCollection.get(j).getChocolatier()))
@@ -249,12 +288,13 @@ public class Chocolatiers implements ChocolatiersInterface
         }
 
         System.out.println("And the most common chocolatier for " + d + " eggs is......" + chocolatiersCollection.get(maxIndex).getChocolatier() + "!");
+
     }
 
-    
+    // Check if a chocolatier is one that we care about
     private boolean isValidChocolatier(String chocolatierName)
     {
-        boolean isValid = false;
+        boolean isValid = false; // Assume that the input chocolatier is invalid 
         for (int i = 0; i < CHOCOLATIERS.length; i++)
         {
             if (CHOCOLATIERS[i].equals(chocolatierName))
@@ -265,6 +305,7 @@ public class Chocolatiers implements ChocolatiersInterface
         return isValid;
     }
 
+    // Gets the max element of an array of ints
     private int maxElement(int[] array)
     {
         int max = 0;
@@ -277,8 +318,8 @@ public class Chocolatiers implements ChocolatiersInterface
         }
         return max;
     }
-
-	/**
+    
+    /**
 	 * toString()
 	 * 
 	 * @return String -- printable form of the collection of chocolatiers
@@ -291,6 +332,13 @@ public class Chocolatiers implements ChocolatiersInterface
 	 */
     public String toString()
     {
-        return "";
+        String output = ""; 
+        if (!isEmpty()) {
+            for (int i = 0; i < chocolatiersCollection.count; i++) {
+                output += chocolatiersCollection.get(i).toString();
+                output += "\n";
+            }
+        }
+        return output;
     }
 }
