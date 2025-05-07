@@ -7,6 +7,15 @@
  * @version	<<date of completion>>
  */
 
+/*
+c)
+Dynamic Array.
+Allows us to add any amount of data without having to worry about managing it size. We don't know how many chocolatiers there are in total, we only know that there will be at least, and we will need to find the total of unused eggs.
+
+d)
+Array.
+The order of the chocolatiers don't matter, so we won't need to move any of the data. We can simply append the next chocolatier to the end of the array.
+*/
 
 import java.text.DecimalFormat;
 import java.util.Arrays;

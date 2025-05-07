@@ -7,6 +7,16 @@
  * @version	<<date of completion>>
  */
 
+/*
+a)
+sorted list.
+Allows us to sort the eggs based on their volume. And will allow us to easily access the data.
+
+b)
+Linked List.
+The eggs will be stored in order of volume, so using a linked list will allow us to dynamically adjust the data. If an array was used the memory would be constantly changing when adding eggs, which would be slow. Hence, using a linked list will allow us to add eggs without moving a lot memory many times.
+*/
+
 
 
 public class Eggs implements EggsInterface
