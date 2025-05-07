@@ -17,8 +17,6 @@ Array.
 The order of the chocolatiers don't matter, so we won't need to move any of the data. We can simply append the next chocolatier to the end of the array.
 */
 
-import java.text.DecimalFormat;
-import java.util.Arrays;
 
 public class Chocolatiers implements ChocolatiersInterface
 {
