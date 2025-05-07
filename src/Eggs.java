@@ -11,71 +11,12 @@
 
 public class Eggs implements EggsInterface
 {
-
-    private class DynamicArray {
-        public DynamicArray()
-        {
-            // Set the size of the array to `INITIAL_SIZE`
-            size = INITIAL_SIZE;
-
-            // Allocate `size` amount of memory slots for data
-            data = new Egg[size];
-
-            // Set number of items in the array to zero (this is unnecessary, as java should initialise it to zero any way)
-            count = 0;
-        }
     
-        public void add(Egg obj)
-        {
-            // Increase the size of the array if it is full
-
-            if (count == size)
-            {
-                increase(size * INCREASE_RATIO);
-            }
-
-            // Put the object in the next avalible memory slot
-            data[count] = obj;
-            // Increase the count by one, so we know where to put the next object
-            count++;
-
-        }
-
-        public Egg get(int idx)
-        {
-            // Should do error checking for idx < count, but I wont misuse the my own data structure incorrectly :)
-            // Returns the relevant data at the given index
-            return data[idx];
-        }
-
-        private void increase(int newSize)
-        {
-
-            Egg[] dataNew = new Egg[newSize];
-            for (int i = 0; i < size; i++)
-            {
-                dataNew[i] = data[i];
-            }
-            data = dataNew;
-            size = newSize;
-        }
-    
-        private Egg[] data; // Where the data is stored
-        private int size; // The total amount of elements that could be stored in the arry before increasing in size
-        public int count; // The current number of elements used in the array
-    
-        private final int INCREASE_RATIO = 2; // The amount at which we will increase the size of the array when full
-        // I saw a video that the best ratio is acctually the golden ratio, but 2 is fine too. (https://www.youtube.com/watch?v=GZPqDvG615k)
-    
-        private final int INITIAL_SIZE = 256; // The size that the array will take when initalised.
-        // 256 is feels like a good inital number. Power of 2 and not so small that we will need to increase the size of the array needlessly.
-    
-    }
-
     // final instance variables
 
     // other instance variables
-    protected DynamicArray eggCluster;
+    protected Node eggCluster;
+    protected int eggCount;
 
     
 	/**
@@ -88,7 +29,8 @@ public class Eggs implements EggsInterface
 	 */
     public Eggs()
     {
-        eggCluster = new DynamicArray();
+        eggCluster = new Node(null);
+        eggCount = 0;
     }
 
 	/**
@@ -103,7 +45,7 @@ public class Eggs implements EggsInterface
 	 */
     public boolean isEmpty()
     {
-        return (eggCluster.count == 0);
+        return (eggCount == 0);
     }
 
     /**
@@ -125,8 +67,7 @@ public class Eggs implements EggsInterface
         }
         else
         {
-            //System.out.println(eggCluster[0].chocolatier);
-            return eggCluster.get(0).chocolatier;
+            return ((Egg)eggCluster.getData()).getChocolatier();
         }
         
     }
@@ -144,7 +85,13 @@ public class Eggs implements EggsInterface
 	 */
     public double getVolume()
     {
-        return eggCluster.get(0).volume;
+        if (isEmpty())
+        {
+            return 0.0;
+        } else
+        {
+            return ((Egg)eggCluster.getData()).getVolume();
+        }
     }
 
     /**
@@ -159,7 +106,57 @@ public class Eggs implements EggsInterface
 	 */
     public void addEggToEggs(Egg e)
     {
-        eggCluster.add(e);
+        boolean hasAddedToCluster = false;
+        
+        Node currentEggNode = eggCluster;
+        Node previousEggNode = null;
+        Node newEggNode = new Node(null);
+        
+        while (!hasAddedToCluster)
+        {
+            // Case 1: There are no nodes in the linked list
+            if (eggCount == 0)
+            {
+                eggCluster.setData(e);
+
+                hasAddedToCluster = true;
+                eggCount++;
+            }
+            // Case 2: We have reached the end of the linked list
+            else if (currentEggNode.getNext() == null)
+            {
+                newEggNode.setData(e);
+                currentEggNode.setNext(newEggNode);
+                
+                hasAddedToCluster = true;
+                eggCount++;
+            }
+            // Case 3: The egg to be added has a volume less than the current node we are looking at
+            else if (e.getVolume() < ((Egg)currentEggNode.getData()).getVolume())
+            {
+                newEggNode.setData(e);
+                newEggNode.setNext(currentEggNode);
+
+                // Only set the previous node to point to the new node if it exists
+                // This handles the case when we need to add an egg to the front of the linked list
+                if (previousEggNode != null)
+                {
+                    previousEggNode.setNext(newEggNode);
+                }
+                if (previousEggNode == null)
+                {
+                    eggCluster = newEggNode;
+                }
+
+                hasAddedToCluster = true;
+                eggCount++;
+            }
+            // Case 4: We need to check the next node
+            else {
+                previousEggNode = currentEggNode;
+                currentEggNode = currentEggNode.getNext();
+            }
+        }
     }
 
     /**
@@ -178,26 +175,27 @@ public class Eggs implements EggsInterface
     public double processCategory(char t, int v)
     {
         double total = 0.0;
-        
-        for(int i = 0; i < eggCluster.count; i++)
+        Node eggNode = eggCluster;
+        int count = 1;
+        for (int i = 0; i < eggCount; i++) 
         {
             switch (t) {
             case 'c': {
-                if (eggCluster.get(i).chocolate.ordinal() == v)
+                if (((Egg)eggNode.getData()).chocolate.ordinal() == v)
                 {
                     total++;
                 }
                 break;
             }
             case 'f': {
-                if (eggCluster.get(i).fill.ordinal() == v)
+                if (((Egg)eggNode.getData()).fill.ordinal() == v)
                 {
                     total++;
                 }
                 break;
             }
             case 'r': {
-                if (eggCluster.get(i).wrap.ordinal() == v)
+                if (((Egg)eggNode.getData()).wrap.ordinal() == v)
                 {
                     total++;
                 }
@@ -208,15 +206,17 @@ public class Eggs implements EggsInterface
                 break;
             }
             case 'v': {
-                total += eggCluster.get(i).volume;
+                total += ((Egg)eggNode.getData()).getVolume();
                 break;
             }
             case 'w': {
-                total += eggCluster.get(i).weight;
+                total += ((Egg)eggNode.getData()).weight;
                 break;
             }
             }
+            eggNode = eggNode.getNext();
         }
+
         return total;
     }
 
@@ -236,11 +236,13 @@ public class Eggs implements EggsInterface
         String output = "";
         if (!isEmpty())
         {
-            for(int i = 0; i < eggCluster.count; i++)
+            Node eggNode = eggCluster;
+            while (eggNode.getNext() != null)
             {
-                output += eggCluster.get(i).toString();
+                output += ((Egg)eggCluster.getData()).toString();
                 output += "\n";
             }
+            eggNode = eggNode.getNext();
         }
         return output;
     }
