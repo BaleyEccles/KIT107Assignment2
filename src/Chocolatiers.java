@@ -9,6 +9,7 @@
 
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 public class Chocolatiers implements ChocolatiersInterface
 {
@@ -189,10 +190,11 @@ public class Chocolatiers implements ChocolatiersInterface
     public void showGraph(char t, String d, int v)
     {
         double[] data = new double[chocolatiersCollection.count];
-
+        int[] starCounts = new int[chocolatiersCollection.count];;
         for (int i = 0; i < chocolatiersCollection.count; i++)
         {
             data[i] = chocolatiersCollection.get(i).processCategory(t, v);
+            starCounts[i] = (int)(data[i]/25.0);
         }
 
 
@@ -203,24 +205,30 @@ public class Chocolatiers implements ChocolatiersInterface
         {
             if (isValidChocolatier(chocolatiersCollection.get(i).getChocolatier()))
             {
-                final int starCount = (int)(data[i]/25.0);
+                String dataString;
+                if (t == 'v')
+                {
+                    dataString = String.format("%.3f", data[i]);
+                } else
+                {
+                    dataString = String.format("%.0f", data[i]);
+                }
+                
+                final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
+                final String starPad =  " ".repeat(maxElement(starCounts) + 4 - starCounts[i]);
 
                 if (t == 't' || t == 'f' || t == 'r' || t == 'c')
                 {
-                    final String stars = "*".repeat(starCount);
-                    final String dataString = Double.toString(data[i]);
-                    final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
-                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + "\t\t" + dataString;
+                    final String stars = "*".repeat(starCounts[i]);
+                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + stars + starPad + dataString;
                     System.out.println(bar);
                 } else if (t == 'w' || t == 'v')
                 {
-                    final String dataString = Double.toString(data[i]);
-                    final String leftPad =  " ".repeat(11 - chocolatiersCollection.get(i).getChocolatier().length());
-                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "\t\t" + dataString;
+                    final String bar = leftPad + chocolatiersCollection.get(i).getChocolatier() + " | " + "    " + dataString;
                     System.out.println(bar);
                 }
 
-                        
+
             } else
             {
                 invalidEggs += chocolatiersCollection.get(i).processCategory('t', -1);
@@ -255,6 +263,19 @@ public class Chocolatiers implements ChocolatiersInterface
             }
         }
         return isValid;
+    }
+
+    private int maxElement(int[] array)
+    {
+        int max = 0;
+        for (int i = 0; i < array.length; i++)
+        {
+            if (max < array[i])
+            {
+                max = array[i];
+            }
+        }
+        return max;
     }
 
 	/**
