@@ -12,8 +12,6 @@
 public class Eggs implements EggsInterface
 {
     
-    // final instance variables
-
     // other instance variables
     protected Node eggCluster;
     protected int eggCount;
@@ -106,35 +104,43 @@ public class Eggs implements EggsInterface
 	 */
     public void addEggToEggs(Egg e)
     {
-        boolean hasAddedToCluster = false;
-        
-        Node currentEggNode = eggCluster;
-        Node previousEggNode = null;
-        Node newEggNode = new Node(null);
+        boolean hasAddedToCluster = false; // Boolean that indicates if the egg has been added yet
+        Node currentEggNode = eggCluster; // The node in the linked list that is currently being checked. eggCluster is the first egg in the linked list
+        Node previousEggNode = null; // The previous node that was checked
+        Node newEggNode = new Node(null); // The node that will be placed in the linked list
         
         while (!hasAddedToCluster)
         {
             // Case 1: There are no nodes in the linked list
             if (eggCount == 0)
             {
-                eggCluster.setData(e);
+                // add e to the egg cluster
+                eggCluster.setData(e); 
 
+                // Break from while loop
                 hasAddedToCluster = true;
+                // increment eggCount
                 eggCount++;
             }
             // Case 2: We have reached the end of the linked list
             else if (currentEggNode.getNext() == null)
             {
+                // Add e to a node at the end of the linked list
                 newEggNode.setData(e);
+                // Set the, now second last, node to point to the now last node
                 currentEggNode.setNext(newEggNode);
                 
+                // Break from while loop
                 hasAddedToCluster = true;
+                // increment eggCount
                 eggCount++;
             }
             // Case 3: The egg to be added has a volume less than the current node we are looking at
             else if (e.getVolume() < ((Egg)currentEggNode.getData()).getVolume())
             {
+                // Add some e to a node inbetween two nodes
                 newEggNode.setData(e);
+                // Set the node containing e to point to the current node
                 newEggNode.setNext(currentEggNode);
 
                 // Only set the previous node to point to the new node if it exists
@@ -143,17 +149,23 @@ public class Eggs implements EggsInterface
                 {
                     previousEggNode.setNext(newEggNode);
                 }
+                // set the eggCluster to point to the new node
+                // This ensures that eggCluster is the first node in the list
                 if (previousEggNode == null)
                 {
                     eggCluster = newEggNode;
                 }
 
+                // Break from while loop
                 hasAddedToCluster = true;
+                // increment eggCount
                 eggCount++;
             }
             // Case 4: We need to check the next node
             else {
+                // Set the previous node to the current node
                 previousEggNode = currentEggNode;
+                // Set the current node to the next node in the list
                 currentEggNode = currentEggNode.getNext();
             }
         }
@@ -174,49 +186,55 @@ public class Eggs implements EggsInterface
 	 */
     public double processCategory(char t, int v)
     {
-        double total = 0.0;
-        Node eggNode = eggCluster;
-        int count = 1;
+        double total = 0.0; // The number to be returned, indicating the total sum/count of the requested catagory
+        Node eggNode = eggCluster; // Used to itterate through the linked list, eggCluster points at the first element
+        
         for (int i = 0; i < eggCount; i++) 
         {
             switch (t) {
-            case 'c': {
-                if (((Egg)eggNode.getData()).chocolate.ordinal() == v)
-                {
-                    total++;
+            case 'c':
+                { // Case: count chocolate corresponding to ordinal v
+                    if (((Egg)eggNode.getData()).chocolate.ordinal() == v)
+                    {
+                        total++;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'f': {
-                if (((Egg)eggNode.getData()).fill.ordinal() == v)
-                {
-                    total++;
+            case 'f':
+                { // Case: count fill corresponding to ordinal v
+                    if (((Egg)eggNode.getData()).fill.ordinal() == v)
+                    {
+                        total++;
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'r': {
-                if (((Egg)eggNode.getData()).wrap.ordinal() == v)
-                {
-                    total++;
+            case 'r':
+                { // Case: count fill corresponding to ordinal v
+                    if (((Egg)eggNode.getData()).wrap.ordinal() == v)
+                    {
+                        total++;
+                    }
+                    break;
                 }
-                break;
+            case 't':
+                { // Case: count total number of eggs
+                    total++;
+                    break;
+                }
+            case 'v':
+                { // Case: sum volume
+                    total += ((Egg)eggNode.getData()).getVolume();
+                    break;
+                }
+            case 'w':
+                { // Case: sum weight
+                    total += ((Egg)eggNode.getData()).getWeight();
+                    break;
+                }
             }
-            case 't': {
-                total++;
-                break;
-            }
-            case 'v': {
-                total += ((Egg)eggNode.getData()).getVolume();
-                break;
-            }
-            case 'w': {
-                total += ((Egg)eggNode.getData()).weight;
-                break;
-            }
-            }
+            // Go to next node in linked list
             eggNode = eggNode.getNext();
         }
-
         return total;
     }
 
@@ -233,16 +251,22 @@ public class Eggs implements EggsInterface
 	 */
     public String toString()
     {
-        String output = "";
-        if (!isEmpty())
+        String output = ""; // The string to be modified and returned
+        Node eggNode = null; // Node that will be used for itteration
+        // Verify that the list isn't empty
+        if (!isEmpty()) 
         {
-            Node eggNode = eggCluster;
-            while (eggNode.getNext() != null)
+            eggNode = eggCluster; // Set eggNode to the first node
+            for (int i = 0; i < eggCount; i++)
             {
+                // append the string to output
                 output += ((Egg)eggCluster.getData()).toString();
+                // Add newline after each egg, as requried
                 output += "\n";
+
+                // Set the node to the next node in the linked list
+                eggNode = eggNode.getNext();
             }
-            eggNode = eggNode.getNext();
         }
         return output;
     }
